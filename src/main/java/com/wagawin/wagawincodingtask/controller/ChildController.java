@@ -1,5 +1,6 @@
 package com.wagawin.wagawincodingtask.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wagawin.wagawincodingtask.model.Child;
@@ -35,14 +36,18 @@ public class ChildController {
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode response = mapper.createObjectNode();
-        response.put("parent", child.getPerson().toString());
+        JsonNode parent = mapper.valueToTree(child.getPerson());
+        JsonNode meal = null;
 
         if(child.getMeals().size() > 0) {
             // Get the first one which is also the most favourite one
-            response.put("favourite meal", child.getMeals().get(0).toString());
+            meal = mapper.valueToTree(child.getMeals().get(0));
         } else {
-            response.put("favourite meal", child.getMeals().toString());
+            meal = mapper.valueToTree(child.getMeals());
         }
+
+        response.set("parent", parent);
+        response.set("meal", meal);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
