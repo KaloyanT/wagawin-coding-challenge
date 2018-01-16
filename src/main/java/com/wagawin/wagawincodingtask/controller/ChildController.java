@@ -7,10 +7,10 @@ import com.wagawin.wagawincodingtask.model.Child;
 import com.wagawin.wagawincodingtask.model.Daughter;
 import com.wagawin.wagawincodingtask.model.Son;
 import com.wagawin.wagawincodingtask.repository.ChildRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,6 +60,11 @@ public class ChildController {
         }
 
         Child child = childRepository.findByChildId(childId);
+
+        if(child == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         // Simulate an Eager Fetching in Order to avoid Hibernate Lazy Initialization Exception.
         // The Exception occurs because this endpoint only fetches the Child data without the Person
         // and Meal data. If the /child/info endpoint is called for the same childId which is already
@@ -68,10 +73,6 @@ public class ChildController {
         // we are going to use the data in the other endpoint anyways
         child.getPerson().toString();
         child.getMeals().toString();
-
-        if(child == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode response = mapper.createObjectNode();
